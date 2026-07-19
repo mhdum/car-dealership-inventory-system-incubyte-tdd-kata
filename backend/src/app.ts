@@ -1,6 +1,7 @@
 import { type Request, type Response } from 'express';
 const express = require('express');
 const userRoutes = require('./routes/userRoutes');
+const authRoutes = require('./routes/AuthRoutes'); 
 const errorHandler = require('./middlewares/errorHandler');
 
 const app = express();
@@ -11,9 +12,10 @@ app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use('/api/users', userRoutes);
+app.use('/api/auth', authRoutes);
 
 // Health check route
-app.get('/health', (req:Request, res:Response) => {
+app.get('/health', (req: Request, res: Response) => {
   res.status(200).json({ 
     success: true, 
     message: 'Server is running',
@@ -22,7 +24,7 @@ app.get('/health', (req:Request, res:Response) => {
 });
 
 // 404 handler
-app.use((req:Request, res:Response) => {
+app.use((req: Request, res: Response) => {
   res.status(404).json({
     success: false,
     error: 'Route not found',
