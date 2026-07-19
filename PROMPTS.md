@@ -124,3 +124,11 @@ Help me write unit test cases incrementally for user login. It should cover the 
 
 ✓ JWT returned
 ```
+### 👤 Prompt 6:  Writing minimal code to pass test case
+
+```text
+As we have written the test, now help me write the minimal code to pass this test case (green of tdd)
+
+Follow strict TDD principles.
+```
+
