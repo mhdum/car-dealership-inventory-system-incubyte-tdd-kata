@@ -74,4 +74,11 @@ Mock external dependencies such as:
 
 Follow strict TDD principles.
 ```
+### 👤 Prompt 3: Writing minimal code to pass test case
+```text
+As we have written the test, now help me write the minimal code to pass this test case (green of tdd)
+
+Follow strict TDD principles.
+```
+
 

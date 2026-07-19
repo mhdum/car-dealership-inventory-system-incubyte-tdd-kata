@@ -1,29 +1,16 @@
-// tests/unit/services/userRegistration.service.test.ts
-import { UserRegistrationService } from '../../../src/services/UserRegistrationService';
-import { UserRepository } from '../../../src/repositories/UserRepository';
-import { PasswordHasher } from '../../../src/utils/PasswordHasher';
+const { registerUser } = require('../../../src/services/UserRegistrationService');
+const { findUserByEmail, createUser } = require('../../../src/repositories/UserRepository');
+const { hashPassword } = require('../../../src/common/utils/HashPassword');
 
 jest.mock('../../../src/repositories/UserRepository');
-jest.mock('../../../src/utils/PasswordHasher');
+jest.mock('../../../src/common/utils/HashPassword');
 
 describe('UserRegistrationService', () => {
-  let userRegistrationService: UserRegistrationService;
-  let mockUserRepository: jest.Mocked<UserRepository>;
-  let mockPasswordHasher: jest.Mocked<PasswordHasher>;
-
   beforeEach(() => {
-    mockUserRepository = new UserRepository() as jest.Mocked<UserRepository>;
-    mockPasswordHasher = new PasswordHasher() as jest.Mocked<PasswordHasher>;
-    
-    userRegistrationService = new UserRegistrationService(
-      mockUserRepository,
-      mockPasswordHasher
-    );
-
     jest.clearAllMocks();
   });
 
-  describe('register', () => {
+  describe('registerUser', () => {
     const validUserData = {
       name: 'John Doe',
       email: 'john.doe@dealership.com',
@@ -46,15 +33,15 @@ describe('UserRegistrationService', () => {
         updatedAt: new Date()
       };
 
-      mockUserRepository.findByEmail.mockResolvedValue(null);
-      mockPasswordHasher.hash.mockResolvedValue(hashedPassword);
-      mockUserRepository.create.mockResolvedValue(createdUser);
+      findUserByEmail.mockResolvedValue(null);
+      hashPassword.mockResolvedValue(hashedPassword);
+      createUser.mockResolvedValue(createdUser);
 
-      const result = await userRegistrationService.register(validUserData);
+      const result = await registerUser(validUserData);
 
       expect(result).toEqual(createdUser);
-      expect(mockUserRepository.findByEmail).toHaveBeenCalledWith(validUserData.email);
-      expect(mockUserRepository.create).toHaveBeenCalledTimes(1);
+      expect(findUserByEmail).toHaveBeenCalledWith(validUserData.email);
+      expect(createUser).toHaveBeenCalledTimes(1);
     });
 
     it('should reject duplicate email', async () => {
@@ -70,15 +57,15 @@ describe('UserRegistrationService', () => {
         updatedAt: new Date()
       };
 
-      mockUserRepository.findByEmail.mockResolvedValue(existingUser);
+      findUserByEmail.mockResolvedValue(existingUser);
 
-      await expect(userRegistrationService.register(validUserData))
+      await expect(registerUser(validUserData))
         .rejects
         .toThrow('Email already registered');
 
-      expect(mockUserRepository.findByEmail).toHaveBeenCalledWith(validUserData.email);
-      expect(mockPasswordHasher.hash).not.toHaveBeenCalled();
-      expect(mockUserRepository.create).not.toHaveBeenCalled();
+      expect(findUserByEmail).toHaveBeenCalledWith(validUserData.email);
+      expect(hashPassword).not.toHaveBeenCalled();
+      expect(createUser).not.toHaveBeenCalled();
     });
 
     it('should hash password before saving', async () => {
@@ -95,14 +82,14 @@ describe('UserRegistrationService', () => {
         updatedAt: new Date()
       };
 
-      mockUserRepository.findByEmail.mockResolvedValue(null);
-      mockPasswordHasher.hash.mockResolvedValue(hashedPassword);
-      mockUserRepository.create.mockResolvedValue(createdUser);
+      findUserByEmail.mockResolvedValue(null);
+      hashPassword.mockResolvedValue(hashedPassword);
+      createUser.mockResolvedValue(createdUser);
 
-      await userRegistrationService.register(validUserData);
+      await registerUser(validUserData);
 
-      expect(mockPasswordHasher.hash).toHaveBeenCalledWith(validUserData.password);
-      expect(mockPasswordHasher.hash).toHaveBeenCalledTimes(1);
+      expect(hashPassword).toHaveBeenCalledWith(validUserData.password);
+      expect(hashPassword).toHaveBeenCalledTimes(1);
     });
 
     it('should pass hashed password to repository', async () => {
@@ -119,13 +106,13 @@ describe('UserRegistrationService', () => {
         updatedAt: new Date()
       };
 
-      mockUserRepository.findByEmail.mockResolvedValue(null);
-      mockPasswordHasher.hash.mockResolvedValue(hashedPassword);
-      mockUserRepository.create.mockResolvedValue(createdUser);
+      findUserByEmail.mockResolvedValue(null);
+      hashPassword.mockResolvedValue(hashedPassword);
+      createUser.mockResolvedValue(createdUser);
 
-      await userRegistrationService.register(validUserData);
+      await registerUser(validUserData);
 
-      expect(mockUserRepository.create).toHaveBeenCalledWith({
+      expect(createUser).toHaveBeenCalledWith({
         name: validUserData.name,
         email: validUserData.email,
         phone: validUserData.phone,
@@ -137,30 +124,30 @@ describe('UserRegistrationService', () => {
     it('should propagate hashing errors', async () => {
       const hashingError = new Error('Hashing failed');
 
-      mockUserRepository.findByEmail.mockResolvedValue(null);
-      mockPasswordHasher.hash.mockRejectedValue(hashingError);
+      findUserByEmail.mockResolvedValue(null);
+      hashPassword.mockRejectedValue(hashingError);
 
-      await expect(userRegistrationService.register(validUserData))
+      await expect(registerUser(validUserData))
         .rejects
         .toThrow('Hashing failed');
 
-      expect(mockPasswordHasher.hash).toHaveBeenCalledWith(validUserData.password);
-      expect(mockUserRepository.create).not.toHaveBeenCalled();
+      expect(hashPassword).toHaveBeenCalledWith(validUserData.password);
+      expect(createUser).not.toHaveBeenCalled();
     });
 
     it('should propagate repository errors', async () => {
       const hashedPassword = 'hashed_SecurePass123';
       const repositoryError = new Error('Database connection failed');
 
-      mockUserRepository.findByEmail.mockResolvedValue(null);
-      mockPasswordHasher.hash.mockResolvedValue(hashedPassword);
-      mockUserRepository.create.mockRejectedValue(repositoryError);
+      findUserByEmail.mockResolvedValue(null);
+      hashPassword.mockResolvedValue(hashedPassword);
+      createUser.mockRejectedValue(repositoryError);
 
-      await expect(userRegistrationService.register(validUserData))
+      await expect(registerUser(validUserData))
         .rejects
         .toThrow('Database connection failed');
 
-      expect(mockUserRepository.create).toHaveBeenCalled();
+      expect(createUser).toHaveBeenCalled();
     });
 
     it('should assign default role customer', async () => {
@@ -184,13 +171,13 @@ describe('UserRegistrationService', () => {
         updatedAt: new Date()
       };
 
-      mockUserRepository.findByEmail.mockResolvedValue(null);
-      mockPasswordHasher.hash.mockResolvedValue(hashedPassword);
-      mockUserRepository.create.mockResolvedValue(createdUser);
+      findUserByEmail.mockResolvedValue(null);
+      hashPassword.mockResolvedValue(hashedPassword);
+      createUser.mockResolvedValue(createdUser);
 
-      const result = await userRegistrationService.register(userDataWithoutRole as any);
+      const result = await registerUser(userDataWithoutRole);
 
-      expect(mockUserRepository.create).toHaveBeenCalledWith({
+      expect(createUser).toHaveBeenCalledWith({
         name: userDataWithoutRole.name,
         email: userDataWithoutRole.email,
         phone: userDataWithoutRole.phone,
