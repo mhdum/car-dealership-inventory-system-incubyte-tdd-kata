@@ -1,5 +1,5 @@
 // tests/unit/services/userRegistration.service.test.ts
-import { UserRegistrationService } from '../../../src/services/UserRegistrationService.js';
+import { UserRegistrationService } from '../../../src/services/UserRegistrationService';
 import { UserRepository } from '../../../src/repositories/UserRepository';
 import { PasswordHasher } from '../../../src/utils/PasswordHasher';
 
@@ -25,22 +25,23 @@ describe('UserRegistrationService', () => {
 
   describe('register', () => {
     const validUserData = {
+      name: 'John Doe',
       email: 'john.doe@dealership.com',
+      phone: '1234567890',
       password: 'SecurePass123',
-      firstName: 'John',
-      lastName: 'Doe',
-      role: 'dealer'
+      role: 'admin'
     };
 
     it('should register user successfully', async () => {
       const hashedPassword = 'hashed_SecurePass123';
       const createdUser = {
-        id: '123456',
+        _id: '507f1f77bcf86cd799439011',
+        name: validUserData.name,
         email: validUserData.email,
+        phone: validUserData.phone,
         password: hashedPassword,
-        firstName: validUserData.firstName,
-        lastName: validUserData.lastName,
         role: validUserData.role,
+        status: 'active',
         createdAt: new Date(),
         updatedAt: new Date()
       };
@@ -58,12 +59,13 @@ describe('UserRegistrationService', () => {
 
     it('should reject duplicate email', async () => {
       const existingUser = {
-        id: '789',
+        _id: '507f1f77bcf86cd799439012',
+        name: 'Jane Smith',
         email: validUserData.email,
+        phone: '9876543210',
         password: 'someHashedPassword',
-        firstName: 'Jane',
-        lastName: 'Smith',
-        role: 'manager',
+        role: 'customer',
+        status: 'active',
         createdAt: new Date(),
         updatedAt: new Date()
       };
@@ -82,12 +84,13 @@ describe('UserRegistrationService', () => {
     it('should hash password before saving', async () => {
       const hashedPassword = 'hashed_SecurePass123';
       const createdUser = {
-        id: '123456',
+        _id: '507f1f77bcf86cd799439011',
+        name: validUserData.name,
         email: validUserData.email,
+        phone: validUserData.phone,
         password: hashedPassword,
-        firstName: validUserData.firstName,
-        lastName: validUserData.lastName,
         role: validUserData.role,
+        status: 'active',
         createdAt: new Date(),
         updatedAt: new Date()
       };
@@ -105,12 +108,13 @@ describe('UserRegistrationService', () => {
     it('should pass hashed password to repository', async () => {
       const hashedPassword = 'hashed_SecurePass123';
       const createdUser = {
-        id: '123456',
+        _id: '507f1f77bcf86cd799439011',
+        name: validUserData.name,
         email: validUserData.email,
+        phone: validUserData.phone,
         password: hashedPassword,
-        firstName: validUserData.firstName,
-        lastName: validUserData.lastName,
         role: validUserData.role,
+        status: 'active',
         createdAt: new Date(),
         updatedAt: new Date()
       };
@@ -122,10 +126,10 @@ describe('UserRegistrationService', () => {
       await userRegistrationService.register(validUserData);
 
       expect(mockUserRepository.create).toHaveBeenCalledWith({
+        name: validUserData.name,
         email: validUserData.email,
+        phone: validUserData.phone,
         password: hashedPassword,
-        firstName: validUserData.firstName,
-        lastName: validUserData.lastName,
         role: validUserData.role
       });
     });
@@ -159,22 +163,23 @@ describe('UserRegistrationService', () => {
       expect(mockUserRepository.create).toHaveBeenCalled();
     });
 
-    it('should assign default role user', async () => {
+    it('should assign default role customer', async () => {
       const userDataWithoutRole = {
+        name: 'John Doe',
         email: 'john.doe@dealership.com',
-        password: 'SecurePass123',
-        firstName: 'John',
-        lastName: 'Doe'
+        phone: '1234567890',
+        password: 'SecurePass123'
       };
 
       const hashedPassword = 'hashed_SecurePass123';
       const createdUser = {
-        id: '123456',
+        _id: '507f1f77bcf86cd799439011',
+        name: userDataWithoutRole.name,
         email: userDataWithoutRole.email,
+        phone: userDataWithoutRole.phone,
         password: hashedPassword,
-        firstName: userDataWithoutRole.firstName,
-        lastName: userDataWithoutRole.lastName,
-        role: 'user',
+        role: 'customer',
+        status: 'active',
         createdAt: new Date(),
         updatedAt: new Date()
       };
@@ -186,13 +191,13 @@ describe('UserRegistrationService', () => {
       const result = await userRegistrationService.register(userDataWithoutRole as any);
 
       expect(mockUserRepository.create).toHaveBeenCalledWith({
+        name: userDataWithoutRole.name,
         email: userDataWithoutRole.email,
+        phone: userDataWithoutRole.phone,
         password: hashedPassword,
-        firstName: userDataWithoutRole.firstName,
-        lastName: userDataWithoutRole.lastName,
-        role: 'user'
+        role: 'customer'
       });
-      expect(result.role).toBe('user');
+      expect(result.role).toBe('customer');
     });
   });
 });
