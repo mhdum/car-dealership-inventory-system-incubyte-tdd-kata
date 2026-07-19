@@ -80,5 +80,11 @@ As we have written the test, now help me write the minimal code to pass this tes
 
 Follow strict TDD principles.
 ```
+### 👤 Prompt 4: Refactoring the registration code
+```text
+As we have written the minimal code to pass test, now help me refactor the code
+
+Follow strict TDD principles.
+```
 
 

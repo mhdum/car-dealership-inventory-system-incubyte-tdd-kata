@@ -1,13 +1,23 @@
-// src/utils/PasswordHasher.js
 const bcrypt = require('bcrypt');
+const { BCRYPT } = require('../config/constants');
+const ErrorMessages = require('../utils/errors/ErrorMessage');
 
-const hashPassword = async (password:string) => {
-  const saltRounds = 10;
-  return await bcrypt.hash(password, saltRounds);
+const hashPassword = async (plainPassword:string) => {
+  try {
+    const hashedPassword = await bcrypt.hash(plainPassword, BCRYPT.SALT_ROUNDS);
+    return hashedPassword;
+  } catch (error) {
+    throw new Error(ErrorMessages.SERVER.HASHING_ERROR);
+  }
 };
 
-const comparePassword = async (password:string, hashedPassword:string) => {
-  return await bcrypt.compare(password, hashedPassword);
+const comparePassword = async (plainPassword:string, hashedPassword:string) => {
+  try {
+    const isMatch = await bcrypt.compare(plainPassword, hashedPassword);
+    return isMatch;
+  } catch (error) {
+    throw new Error(ErrorMessages.SERVER.HASHING_ERROR);
+  }
 };
 
 module.exports = {

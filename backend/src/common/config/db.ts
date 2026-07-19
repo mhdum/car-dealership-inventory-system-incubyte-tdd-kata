@@ -1,15 +1,31 @@
-import mongoose from "mongoose";
+// src/config/database.js
+const mongoose = require('mongoose');
 
-const connectDB = async () => {
-  if (!process.env.MONGODB_URI) {
-    throw new Error("mongodb uri not found");
-  }
+const connectDatabase = async (uri:string) => {
   try {
-    const connection = await mongoose.connect(process.env.MONGODB_URI);
-    console.log(connection.connection.host);
-  } catch (err) {
-    console.error(`Errror connecting to db`);
+    const options = {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    };
+
+    await mongoose.connect(uri, options);
+    console.log('✅ MongoDB connected successfully');
+  } catch (error:any) {
+    console.error('❌ MongoDB connection error:', error.message);
+    process.exit(1);
   }
 };
 
-export default connectDB;
+const disconnectDatabase = async () => {
+  try {
+    await mongoose.connection.close();
+    console.log('✅ MongoDB disconnected successfully');
+  } catch (error:any) {
+    console.error('❌ MongoDB disconnection error:', error.message);
+  }
+};
+
+module.exports = {
+  connectDatabase,
+  disconnectDatabase
+};

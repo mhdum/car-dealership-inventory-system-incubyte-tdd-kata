@@ -1,18 +1,29 @@
 import { type Request, type Response } from 'express';
+// src/controllers/UserController.js
 const { registerUser } = require('../services/UserRegistrationService');
+const AppError = require('../common/utils/errors/AppError');
+const { HTTP_STATUS } = require('../common/config/constants');
 
-interface RegisterRequestBody {
-  name: string;
-  email: string;
-  phone: string;
-  password?: string;
-  role?: string;
-}
+const handleError = (error:any, res:Response) => {
+  if (error instanceof AppError) {
+    return res.status(error.statusCode).json({
+      success: false,
+      error: error.message,
+      timestamp: error.timestamp
+    });
+  }
+  
+  // Log unexpected errors
+  console.error('Unexpected error:', error);
+  
+  return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
+    success: false,
+    error: 'Internal server error',
+    timestamp: new Date().toISOString()
+  });
+};
 
-const register = async (
-  req: Request<{}, {}, RegisterRequestBody>, 
-  res: Response
-): Promise<void> => {
+const register = async (req:Request, res:Response) => {
   try {
     const { name, email, phone, password, role } = req.body;
 
@@ -24,24 +35,13 @@ const register = async (
       role
     });
 
-    const userResponse = {
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      phone: user.phone,
-      role: user.role,
-      status: user.status,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt
-    };
-
-    res.status(201).json(userResponse);
-  } catch (error: unknown) {
-    if (error instanceof Error && error.message === 'Email already registered') {
-      res.status(409).json({ error: error.message });
-    } else {
-      res.status(500).json({ error: 'Internal server error' });
-    }
+    return res.status(HTTP_STATUS.CREATED).json({
+      success: true,
+      data: user,
+      message: 'User registered successfully'
+    });
+  } catch (error) {
+    return handleError(error, res);
   }
 };
 

@@ -1,4 +1,3 @@
-// src/routes/userRoutes.js
 const express = require('express');
 const { register } = require('../controllers/UserController');
 

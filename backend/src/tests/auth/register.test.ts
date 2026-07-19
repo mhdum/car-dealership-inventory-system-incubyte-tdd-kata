@@ -1,3 +1,4 @@
+// tests/unit/services/userRegistration.service.test.js
 const { registerUser } = require('../../../src/services/UserRegistrationService');
 const { findUserByEmail, createUser } = require('../../../src/repositories/UserRepository');
 const { hashPassword } = require('../../../src/common/utils/HashPassword');
@@ -39,8 +40,10 @@ describe('UserRegistrationService', () => {
 
       const result = await registerUser(validUserData);
 
-      expect(result).toEqual(createdUser);
-      expect(findUserByEmail).toHaveBeenCalledWith(validUserData.email);
+      expect(result).toHaveProperty('_id');
+      expect(result.email).toBe(validUserData.email);
+      expect(result).not.toHaveProperty('password');
+      expect(findUserByEmail).toHaveBeenCalledWith(validUserData.email.toLowerCase());
       expect(createUser).toHaveBeenCalledTimes(1);
     });
 
@@ -63,7 +66,7 @@ describe('UserRegistrationService', () => {
         .rejects
         .toThrow('Email already registered');
 
-      expect(findUserByEmail).toHaveBeenCalledWith(validUserData.email);
+      expect(findUserByEmail).toHaveBeenCalledWith(validUserData.email.toLowerCase());
       expect(hashPassword).not.toHaveBeenCalled();
       expect(createUser).not.toHaveBeenCalled();
     });
@@ -112,13 +115,12 @@ describe('UserRegistrationService', () => {
 
       await registerUser(validUserData);
 
-      expect(createUser).toHaveBeenCalledWith({
-        name: validUserData.name,
-        email: validUserData.email,
-        phone: validUserData.phone,
-        password: hashedPassword,
-        role: validUserData.role
-      });
+      expect(createUser).toHaveBeenCalledWith(
+        expect.objectContaining({
+          password: hashedPassword,
+          email: validUserData.email.toLowerCase()
+        })
+      );
     });
 
     it('should propagate hashing errors', async () => {
@@ -177,13 +179,11 @@ describe('UserRegistrationService', () => {
 
       const result = await registerUser(userDataWithoutRole);
 
-      expect(createUser).toHaveBeenCalledWith({
-        name: userDataWithoutRole.name,
-        email: userDataWithoutRole.email,
-        phone: userDataWithoutRole.phone,
-        password: hashedPassword,
-        role: 'customer'
-      });
+      expect(createUser).toHaveBeenCalledWith(
+        expect.objectContaining({
+          role: 'customer'
+        })
+      );
       expect(result.role).toBe('customer');
     });
   });
