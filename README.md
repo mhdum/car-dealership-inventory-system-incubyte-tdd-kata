@@ -1,12 +1,10 @@
----
-
 # Car Dealership Inventory Management System — Backend API
 
 A robust, type-safe backend engine built using modern Node.js ecosystem standards. This microservice manages vehicle allocations, inventory workflows, and security domains using a strict Test-Driven Development (TDD) engineering cycle.
 
 ## Repository Information
 
-* **Public Repository Link:** `[https://github.com/your-username/car-inventory-management-backend](https://github.com/your-username/car-inventory-management-backend)`
+* **Public Repository Link:** `[https://github.com/mhdum/car-dealership-inventory-system-incubyte-tdd-kata](https://github.com/mhdum/car-dealership-inventory-system-incubyte-tdd-kata)`
 
 ---
 
@@ -53,8 +51,8 @@ Ensure you have the following installed on your machine:
 ### Step 1: Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/car-inventory-management-backend.git
-cd car-inventory-management-backend
+git clone https://github.com/mhdum/car-dealership-inventory-system-incubyte-tdd-kata.git
+cd backend
 
 ```
 
@@ -70,9 +68,9 @@ npm install
 Create a `.env` file in the root directory of the application:
 
 ```env
-PORT=5000
-MONGODB_URI=mongodb://localhost:27017/car_dealership
-JWT_SECRET=your_super_secure_jwt_secret_key_here
+PORT=8000
+MONGODB_URI=mongodb+srv://mhdumar115_db_user:database@cluster0.jrgr1td.mongodb.net/
+JWT_SECRET=e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
 NODE_ENV=development
 
 ```
@@ -93,9 +91,6 @@ npm run build
 npm start
 
 ```
-
-> **Note on Frontend Setup:** As this repository holds the specialized backend core infrastructure only, the corresponding frontend UI layer installation guide can be reviewed inside our distinct repository layer: `[https://github.com/your-username/car-inventory-management-frontend](https://github.com/your-username/car-inventory-management-frontend)`.
-
 ---
 
 ## Application In Action
