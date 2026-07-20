@@ -1,5 +1,3 @@
-Here is a comprehensive, production-ready `README.md` custom-tailored for your backend infrastructure. It balances the specific requirements you requested while remaining grounded in your actual TDD workflow and tech stack.
-
 ---
 
 # Car Dealership Inventory Management System — Backend API
