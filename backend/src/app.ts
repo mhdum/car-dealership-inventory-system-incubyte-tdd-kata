@@ -3,7 +3,7 @@ const express = require('express');
 const userRoutes = require('./routes/userRoutes');
 const authRoutes = require('./routes/AuthRoutes'); 
 const errorHandler = require('./middlewares/errorHandler');
-const vehicleRoutes = require('./routes/VehicleRoute');
+const vehicleRoutes = require('./routes/VehicleRoutes');
 
 const app = express();
 

@@ -1,27 +1,27 @@
-import { type Request, type Response, type NextFunction } from "express";
-const jwt = require("jsonwebtoken");
-const JWT_SECRET = process.env.JWT_SECRET || "test_secret";
+import { type Request,type  Response,type NextFunction } from 'express';
+const { verifyToken } = require('../common/utils/JwtToken'); // Assumes verifyToken helper exists
 
-interface AuthRequest extends Request {
+export interface AuthenticatedRequest extends Request {
   user?: any;
 }
 
-const requireAuth = (req: AuthRequest, res: Response, next: NextFunction) => {
+function authenticate(req: AuthenticatedRequest, res: Response, next: NextFunction): void {
   const authHeader = req.headers.authorization;
 
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return res.status(401).json({ success: false, message: "Token required" });
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    res.status(401).json({ message: 'Authentication token missing or invalid' });
+    return;
   }
 
-  const token = authHeader.split(" ")[1];
+  const token = authHeader.split(' ')[1];
 
   try {
-    const decoded = jwt.verify(token, JWT_SECRET);
-    req.user = decoded; // Attaching user payload to request
+    const decoded = verifyToken(token);
+    req.user = decoded;
     next();
   } catch (error) {
-    return res.status(401).json({ success: false, message: "Invalid or expired token" });
+    res.status(401).json({ message: 'Authentication token missing or invalid' });
   }
-};
+}
 
-module.exports = { requireAuth };
+module.exports = {authenticate}

@@ -1,19 +1,22 @@
-import {type Request,type Response} from 'express'
-const Vehicle = require('../models/vehicle.model');
-const catchAsync = require('../common/utils/catchAsync');
+import { type Response,type NextFunction } from 'express';
+import {type AuthenticatedRequest } from '../middlewares/auth.middleware';
+const { createVehicle } = require('../services/VehicleService');
 
-const createVehicle = catchAsync(async (req:Request, res:Response) => {
-  const newVehicle = new Vehicle(req.body);
-  const savedVehicle = await newVehicle.save();
-  
-  res.status(201).json({
-    success: true,
-    data: savedVehicle
-  });
-});
+async function createVehicleController(
+  req: AuthenticatedRequest, 
+  res: Response, 
+  next: NextFunction
+): Promise<void> {
+  try {
+    const vehicle = await createVehicle(req.body);
 
+    res.status(201).json({
+      status: 'success',
+      data: vehicle
+    });
+  } catch (error) {
+    next(error);
+  }
+}
 
-
-module.exports = { 
-  createVehicle
-};
+module.exports = {createVehicleController}

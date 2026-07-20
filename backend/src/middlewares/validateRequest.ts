@@ -1,14 +1,16 @@
-import { type Request, type Response } from "express";
+import { type Request, type Response, type NextFunction } from "express";
 const { HTTP_STATUS } = require("../common/config/constants");
 
 const validateBody = (schema: any) => {
-  return (req: Request, res: Response, next: any) => {
-    const { error } = schema.validate(req.body, { abortEarly: false });
+  return (req: Request, res: Response, next: NextFunction) => {
+    // 1. Use Zod's safeParse instead of Joi's schema.validate
+    const result = schema.safeParse(req.body);
 
-    if (error) {
-      const errors = error.details.map((detail: any) => ({
-        field: detail.path.join("."),
-        message: detail.message,
+    if (!result.success) {
+      // 2. Map Zod issues into field-specific error objects
+      const errors = result.error.issues.map((issue: any) => ({
+        field: issue.path.join("."),
+        message: issue.message,
       }));
 
       return res.status(HTTP_STATUS.BAD_REQUEST).json({
@@ -17,6 +19,9 @@ const validateBody = (schema: any) => {
         timestamp: new Date().toISOString(),
       });
     }
+
+    // 3. Replace req.body with the sanitized/parsed data (applies .trim(), .lowercase(), defaults, etc.)
+    req.body = result.data;
 
     next();
   };
