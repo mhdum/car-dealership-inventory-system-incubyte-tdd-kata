@@ -3,6 +3,7 @@ const express = require('express');
 const userRoutes = require('./routes/userRoutes');
 const authRoutes = require('./routes/AuthRoutes'); 
 const errorHandler = require('./middlewares/errorHandler');
+const vehicleRoutes = require('./routes/VehicleRoute');
 
 const app = express();
 
@@ -13,6 +14,7 @@ app.use(express.urlencoded({ extended: true }));
 // Routes
 app.use('/api/users', userRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/vehicles', vehicleRoutes);
 
 // Health check route
 app.get('/health', (req: Request, res: Response) => {

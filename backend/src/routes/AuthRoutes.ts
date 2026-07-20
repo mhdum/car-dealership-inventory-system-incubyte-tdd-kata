@@ -1,7 +1,7 @@
 // src/routes/auth.routes.ts
 const { Router } = require('express');
-const { loginController } = require('../controllers/auth.controller');
-const { validateBody } = require('../middlewares/validateRequest.middleware');
+const { loginController } = require('..//controller/AuthController');
+const validateBody  = require('../middlewares/validateRequest');
 const { loginSchema } = require('../common/utils/validators/auth.schema');
 
 const authRouter = Router();
