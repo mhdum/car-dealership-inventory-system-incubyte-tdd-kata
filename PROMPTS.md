@@ -138,4 +138,14 @@ As we have written the minimal code to pass test, now help me refactor the code 
 
 Follow strict TDD principles.
 ```
+### 👤 Prompt 8: Writing test cases for post vehicles
 
+```text
+Hi.
+
+I'm developing the backend of a car dealership inventory management system.
+
+I'm strictly following a TDD approach.
+
+Help me write unit test cases incrementally for psot/vehicle. Use my vehicle model
+```
