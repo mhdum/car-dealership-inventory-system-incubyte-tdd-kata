@@ -69,8 +69,6 @@ Create a `.env` file in the root directory of the application:
 
 ```env
 PORT=8000
-MONGODB_URI=mongodb+srv://mhdumar115_db_user:database@cluster0.jrgr1td.mongodb.net/
-JWT_SECRET=e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
 NODE_ENV=development
 
 ```
